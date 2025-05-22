@@ -18,6 +18,8 @@ class Mascota(models.Model):
     genero = models.CharField(max_length=100)
     edad = models.IntegerField()
     peso = models.IntegerField()
+    
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Cita(models.Model):
     tipo_recordatorio = models.CharField(max_length=100)
@@ -27,4 +29,4 @@ class Cita(models.Model):
     nota = models.CharField(max_length=200)
     recordatorio = models.CharField(max_length=100)
     
-    usuario = models.ForeignKey(Mascota, on_delete=models.CASCADE)
+    mascota = models.ForeignKey(Mascota, on_delete=models.CASCADE)
