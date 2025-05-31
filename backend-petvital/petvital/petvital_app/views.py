@@ -23,6 +23,7 @@ class LoginView(APIView):
                     'user_id': user.user_id,
                     'nombres': user.nombres,
                     'apellidos': user.apellidos,
+                    'email': user.email,
                 }, status=status.HTTP_200_OK)
             except User.DoesNotExist:
                 return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
