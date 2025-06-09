@@ -21,6 +21,11 @@ class MascotaSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
+class CitaCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cita
+        fields = '__all__'
+
 class CitaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cita

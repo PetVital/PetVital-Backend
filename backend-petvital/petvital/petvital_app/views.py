@@ -59,6 +59,34 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# Obtener datos para HomeScreen
+class HomeDataView(APIView):
+    def get(self, request):
+        user_id = request.query_params.get('user_id')
+
+        if not user_id:
+            return Response({'error': 'user_id es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Verificar que el usuario existe
+            user = User.objects.get(user_id=user_id)
+
+            # Obtener mascotas del usuario
+            mascotas = Mascota.objects.filter(usuario=user)
+            mascotas_data = MascotaSerializer(mascotas, many=True).data
+
+            # Obtener citas del usuario
+            citas = Cita.objects.filter(mascota__usuario=user)
+            citas_data = CitaSerializer(citas, many=True).data
+
+            return Response({
+                'mascotas': mascotas_data,
+                'citas': citas_data
+            }, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
 # Crear Mascota
 class MascotaCreateView(generics.CreateAPIView):
     serializer_class = MascotaCreateSerializer
@@ -99,7 +127,7 @@ class MascotaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 
 # Crear Cita
 class CitaCreateView(generics.CreateAPIView):
-    serializer_class = CitaSerializer
+    serializer_class = CitaCreateSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
