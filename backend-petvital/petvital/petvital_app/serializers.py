@@ -10,6 +10,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ['nombres', 'apellidos', 'email', 'contraseña']
 
+class MascotaCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mascota
+        fields = '__all__'
+
 class MascotaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mascota

@@ -8,7 +8,8 @@ from django.shortcuts import render
 from .models import *
 from .serializers import *
 
-#Login
+
+# Login
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -18,18 +19,28 @@ class LoginView(APIView):
 
             try:
                 user = User.objects.get(email=email, contraseña=contraseña)
+
+                # Verificar si el usuario tiene mascotas
+                has_pets = Mascota.objects.filter(usuario=user).exists()
+
                 return Response({
                     'message': 'Login exitoso',
-                    'user_id': user.user_id,
-                    'nombres': user.nombres,
-                    'apellidos': user.apellidos,
-                    'email': user.email,
+                    'user': {
+                        'user_id': user.user_id,
+                        'nombres': user.nombres,
+                        'apellidos': user.apellidos,
+                        'email': user.email,
+                    },
+                    'hasPets': has_pets
                 }, status=status.HTTP_200_OK)
+
             except User.DoesNotExist:
                 return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#Register
+
+# Register
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -47,9 +58,10 @@ class RegisterView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # Crear Mascota
 class MascotaCreateView(generics.CreateAPIView):
-    serializer_class = MascotaSerializer
+    serializer_class = MascotaCreateSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -57,6 +69,7 @@ class MascotaCreateView(generics.CreateAPIView):
             serializer.save()
             return Response({"message": "Mascota creada exitosamente"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Listar Mascotas con user_id en query param
 class MascotaListView(generics.ListAPIView):
@@ -67,6 +80,7 @@ class MascotaListView(generics.ListAPIView):
         if user_id:
             return Mascota.objects.filter(usuario__user_id=user_id)
         return Mascota.objects.none()
+
 
 # Update y Delete de Mascota
 class MascotaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
@@ -82,6 +96,7 @@ class MascotaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Mascota eliminada exitosamente"}, status=status.HTTP_204_NO_CONTENT)
 
+
 # Crear Cita
 class CitaCreateView(generics.CreateAPIView):
     serializer_class = CitaSerializer
@@ -92,6 +107,7 @@ class CitaCreateView(generics.CreateAPIView):
             serializer.save()
             return Response({"message": "Cita creada exitosamente"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Listar Citas por query param: user_id, mascota_id
 class CitaListView(generics.ListAPIView):
@@ -110,6 +126,7 @@ class CitaListView(generics.ListAPIView):
 
         return queryset
 
+
 # Update y Delete de Cita
 class CitaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cita.objects.all()
@@ -123,6 +140,3 @@ class CitaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Cita eliminada exitosamente"}, status=status.HTTP_204_NO_CONTENT)
-
-    
-
