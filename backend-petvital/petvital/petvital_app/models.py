@@ -18,7 +18,7 @@ class Mascota(models.Model):
     genero = models.CharField(max_length=100)
     edad = models.IntegerField()
     unidad_tiempo = models.CharField(max_length=100)
-    peso = models.IntegerField()
+    peso = models.DecimalField(max_digits=5, decimal_places=2)
     
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
