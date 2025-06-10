@@ -8,11 +8,18 @@ from django.shortcuts import render
 from .models import *
 from .serializers import *
 
-
 # Login
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
+
+# Login usando CreateAPIView
+class LoginView(generics.CreateAPIView):
+    serializer_class = LoginSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
         if serializer.is_valid():
             email = serializer.validated_data['email']
             contraseña = serializer.validated_data['contraseña']
@@ -36,7 +43,6 @@ class LoginView(APIView):
 
             except User.DoesNotExist:
                 return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -107,7 +113,8 @@ class MascotaListView(generics.ListAPIView):
         user_id = self.request.query_params.get('user_id')
         if user_id:
             return Mascota.objects.filter(usuario__user_id=user_id)
-        return Mascota.objects.none()
+        else:
+            return Mascota.objects.filter(usuario__user_id=1)
 
 
 # Update y Delete de Mascota
