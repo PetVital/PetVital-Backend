@@ -9,6 +9,8 @@ from .models import *
 from .serializers import *
 from petvital_app.utils.gemini_api import enviar_mensaje
 
+from .serializers import MascotaSerializer  # Asegúrate de importar tu serializer de Mascota
+
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -19,8 +21,9 @@ class LoginView(APIView):
             try:
                 user = User.objects.get(email=email, contraseña=contraseña)
 
-                # Verificar si el usuario tiene mascotas
-                has_pets = Mascota.objects.filter(usuario=user).exists()
+                # Obtener las mascotas del usuario
+                mascotas = Mascota.objects.filter(usuario=user)
+                mascotas_serializadas = MascotaSerializer(mascotas, many=True).data
 
                 return Response({
                     'message': 'Login exitoso',
@@ -30,13 +33,14 @@ class LoginView(APIView):
                         'apellidos': user.apellidos,
                         'email': user.email,
                     },
-                    'hasPets': has_pets
+                    'pets': mascotas_serializadas
                 }, status=status.HTTP_200_OK)
 
             except User.DoesNotExist:
                 return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Register
 class RegisterView(APIView):
