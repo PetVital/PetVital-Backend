@@ -8,18 +8,9 @@ from django.shortcuts import render
 from .models import *
 from .serializers import *
 
-# Login
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-
-# Login usando CreateAPIView
-class LoginView(generics.CreateAPIView):
-    serializer_class = LoginSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-
         if serializer.is_valid():
             email = serializer.validated_data['email']
             contraseña = serializer.validated_data['contraseña']
@@ -43,8 +34,8 @@ class LoginView(generics.CreateAPIView):
 
             except User.DoesNotExist:
                 return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Register
 class RegisterView(APIView):
@@ -63,7 +54,6 @@ class RegisterView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # Obtener datos para HomeScreen
 class HomeDataView(APIView):
