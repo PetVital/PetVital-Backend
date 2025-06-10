@@ -10,7 +10,7 @@ def enviar_mensaje(data):
     memory_bank = data.get("memoryBank", [])
 
     # Construimos un prompt para Gemini
-    prompt = "Eres un asistente veterinario virtual. Basado en la siguiente información de las mascotas y de las conversaciones previas que tuviste con el usuario, responde al mensaje del usuario con consejos de salud. Se preciso y especifico en tus comentarios y consejos, recuerda que se trata de la vida de una mascota. Limita tu respuesta a 100 palabras"
+    prompt = "Eres un asistente veterinario virtual. Basado en la siguiente información de las mascotas y de las conversaciones previas que tuviste con el usuario, responde al mensaje del usuario. Se preciso y especifico en tus comentarios y consejos, recuerda que se trata de la vida de una mascota. Limita tu respuesta a maximo 100 palabras solo de ser necesario, normalmente tus respuesta seran cortas (20 palabras) para no abrumar al usuario."
     
     # Incluir las mascotas
     prompt += "Mascotas registradas:\n"

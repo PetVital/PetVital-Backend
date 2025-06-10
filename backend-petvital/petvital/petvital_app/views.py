@@ -93,11 +93,15 @@ class MascotaCreateView(generics.CreateAPIView):
     serializer_class = MascotaCreateSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Mascota creada exitosamente"}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        create_serializer = self.get_serializer(data=request.data)
+        if create_serializer.is_valid():
+            mascota = create_serializer.save()
+            response_serializer = MascotaSerializer(mascota)
+            return Response({
+                "message": "Mascota creada exitosamente",
+                "mascota": response_serializer.data
+            }, status=status.HTTP_201_CREATED)
+        return Response(create_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Listar Mascotas con user_id en query param
 class MascotaListView(generics.ListAPIView):
