@@ -7,6 +7,7 @@ from django.shortcuts import render
 
 from .models import *
 from .serializers import *
+from petvital_app.utils.gemini_api import enviar_mensaje
 
 class LoginView(APIView):
     def post(self, request):
@@ -94,7 +95,6 @@ class MascotaCreateView(generics.CreateAPIView):
             return Response({"message": "Mascota creada exitosamente"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 # Listar Mascotas con user_id en query param
 class MascotaListView(generics.ListAPIView):
     serializer_class = MascotaSerializer
@@ -105,7 +105,6 @@ class MascotaListView(generics.ListAPIView):
             return Mascota.objects.filter(usuario__user_id=user_id)
         else:
             return Mascota.objects.filter(usuario__user_id=1)
-
 
 # Update y Delete de Mascota
 class MascotaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
@@ -121,7 +120,6 @@ class MascotaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Mascota eliminada exitosamente"}, status=status.HTTP_204_NO_CONTENT)
 
-
 # Crear Cita
 class CitaCreateView(generics.CreateAPIView):
     serializer_class = CitaCreateSerializer
@@ -134,8 +132,6 @@ class CitaCreateView(generics.CreateAPIView):
             return Response({"message": "Cita creada exitosamente"}, status=status.HTTP_201_CREATED)
         print("Errores del serializer:", serializer.errors)  # <-- imprime los errores
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 # Listar Citas por query param: user_id, mascota_id
 class CitaListView(generics.ListAPIView):
@@ -154,7 +150,6 @@ class CitaListView(generics.ListAPIView):
 
         return queryset
 
-
 # Update y Delete de Cita
 class CitaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cita.objects.all()
@@ -168,3 +163,16 @@ class CitaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Cita eliminada exitosamente"}, status=status.HTTP_204_NO_CONTENT)
+
+class ProcesarMensajeIAView(generics.CreateAPIView):
+    serializer_class = MensajeIAInputSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                respuesta = enviar_mensaje(serializer.validated_data)
+                return Response({"botMessage": respuesta}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

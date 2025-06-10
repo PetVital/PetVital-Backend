@@ -1,25 +1,34 @@
 import google.generativeai as genai
-import json
-from petvital_app.utils import GOOGLE_API_KEY
+
+from petvital_app.utils.config import GOOGLE_API_KEY
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
-def enviar_mensaje(mensaje_usuario):
-    print("Iniciando Conversación...")
+def enviar_mensaje(data):
+    current_message = data.get("currentMessage")
+    previous_messages = data.get("previousMessages", [])
+    memory_bank = data.get("memoryBank", [])
 
-    prompt = ""
+    # Construimos un prompt para Gemini
+    prompt = "Eres un asistente veterinario virtual. Basado en la siguiente información de las mascotas y de las conversaciones previas que tuviste con el usuario, responde al mensaje del usuario con consejos de salud. Se preciso y especifico en tus comentarios y consejos, recuerda que se trata de la vida de una mascota. Limita tu respuesta a 100 palabras"
+    
+    # Incluir las mascotas
+    prompt += "Mascotas registradas:\n"
+    for pet in memory_bank:
+        prompt += f"- {pet['name']}, {pet['type']}, raza {pet['breed']}, {pet['gender']}, edad {pet['age']}, peso {pet['weight']}\n"
 
+    # Incluir el historial de mensajes
+    prompt += "\nConversación previa:\n"
+    for msg in previous_messages:
+        role = "Bot" if msg["isBot"] else "Usuario"
+        prompt += f"{role}: {msg['message']}\n"
+
+    # Incluir el mensaje actual
+    prompt += f"\nUsuario: {current_message}\n"
+    prompt += "Bot:"
+
+    # Enviar a Gemini
     model = genai.GenerativeModel('gemini-1.5-flash')
     response = model.generate_content(prompt)
-    
-    json_response = response.text.strip()
-    
-    if json_response.startswith('```json'):
-        json_response = json_response.replace('```json', '').replace('```', '').strip()
-    
-    try:
-        json_data = json.loads(json_response, strict=False)
-        return json_data
-    except json.JSONDecodeError:
-        print("Error al decodificar JSON:", json_response)
-        return {"respuesta": "Lo siento, no pude entender la respuesta. Intenta formular tu pregunta de otra forma."}
+
+    return response.text.strip()

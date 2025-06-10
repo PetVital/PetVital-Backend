@@ -30,3 +30,12 @@ class CitaSerializer(serializers.ModelSerializer):
         model = Cita
         fields = '__all__'
         depth = 1
+
+class MensajeIAInputSerializer(serializers.Serializer):
+    currentMessage = serializers.CharField()
+    previousMessages = serializers.ListField(
+        child=serializers.DictField(), required=False
+    )
+    memoryBank = serializers.ListField(
+        child=serializers.DictField(), required=False
+    )

@@ -14,4 +14,6 @@ urlpatterns = [
     path('citas/create/', CitaCreateView.as_view(), name='citas-create'),
     path('citas/list/', CitaListView.as_view(), name='citas-list'),
     path('citas/<int:id>/', CitaUpdateDeleteView.as_view(), name='citas-update-delete'),
+    
+    path('content/generate/', ProcesarMensajeIAView.as_view(), name='generate-content'),
 ]
