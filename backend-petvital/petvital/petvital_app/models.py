@@ -27,7 +27,7 @@ class Cita(models.Model):
     nombre = models.CharField(max_length=100)
     fecha = models.DateField()
     hora = models.TimeField()
-    nota = models.CharField(max_length=200)
-    recordatorio = models.CharField(max_length=100)
+    nota = models.CharField(max_length=200, blank=True)
+    recordatorio = models.CharField(max_length=100, blank=True)
     
     mascota = models.ForeignKey(Mascota, on_delete=models.CASCADE)
