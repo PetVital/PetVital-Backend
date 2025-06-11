@@ -158,6 +158,17 @@ class CitaListView(generics.ListAPIView):
 
         return queryset
 
+class CitaDetailView(generics.RetrieveAPIView):
+    serializer_class = CitaSerializer
+
+    def get_queryset(self):
+        return Cita.objects.all()
+
+    def get_object(self):
+        cita_id = self.kwargs.get('id')
+        queryset = self.get_queryset()
+        return queryset.get(id=cita_id)
+
 # Update y Delete de Cita
 class CitaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cita.objects.all()
