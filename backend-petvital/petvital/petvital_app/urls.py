@@ -15,6 +15,10 @@ urlpatterns = [
     path('citas/list/', CitaListView.as_view(), name='citas-list'),
     path('citas/detail/<int:id>/', CitaDetailView.as_view(), name='cita-detail'),
     path('citas/<int:id>/', CitaUpdateDeleteView.as_view(), name='citas-update-delete'),
+
+    path('revision/create/', RevisionCreateView.as_view(), name='revision-create'),
+    path('revision/list/', RevisionListView.as_view(), name='revision-list'),
+    path('revision/<int:id>/', RevisionUpdateDeleteView.as_view(), name='revision-update-delete'),
     
     path('content/generate/', ProcesarMensajeIAView.as_view(), name='generate-content'),
 ]

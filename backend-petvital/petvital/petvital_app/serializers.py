@@ -32,6 +32,17 @@ class CitaSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
+class RevisionCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Revision
+        fields = '__all__'
+
+class RevisionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Revision
+        fields = '__all__'
+        depth = 1
+
 class MensajeIAInputSerializer(serializers.Serializer):
     currentMessage = serializers.CharField()
     previousMessages = serializers.ListField(

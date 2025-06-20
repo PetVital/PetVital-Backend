@@ -141,6 +141,7 @@ class CitaCreateView(generics.CreateAPIView):
         print("Errores del serializer:", serializer.errors)  # <-- imprime los errores
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # Listar Citas por query param: user_id, mascota_id
 class CitaListView(generics.ListAPIView):
     serializer_class = CitaSerializer
@@ -157,6 +158,7 @@ class CitaListView(generics.ListAPIView):
             queryset = queryset.filter(mascota__usuario__user_id=user_id)
 
         return queryset
+
 
 class CitaDetailView(generics.RetrieveAPIView):
     serializer_class = CitaSerializer
@@ -182,6 +184,50 @@ class CitaUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Cita eliminada exitosamente"}, status=status.HTTP_204_NO_CONTENT)
+
+# Crear Revision
+class RevisionCreateView(generics.CreateAPIView):
+    serializer_class = RevisionCreateSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print("Datos recibidos:", request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Revision creada exitosamente"}, status=status.HTTP_201_CREATED)
+        print("Errores del serializer:", serializer.errors)  # <-- imprime los errores
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Listar Revisiones por query param: user_id, mascota_id
+class RevisionListView(generics.ListAPIView):
+    serializer_class = RevisionSerializer
+
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        mascota_id = self.request.query_params.get('mascota_id')
+
+        queryset = Revision.objects.all()
+
+        if mascota_id:
+            queryset = queryset.filter(mascota__mascota_id=mascota_id)
+        if user_id:
+            queryset = queryset.filter(mascota__usuario__user_id=user_id)
+
+        return queryset
+
+# Update y Delete de Cita
+class RevisionUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Revision.objects.all()
+    serializer_class = RevisionSerializer
+    lookup_field = 'id'
+
+    def update(self, request, *args, **kwargs):
+        super().update(request, *args, **kwargs)
+        return Response({"message": "Revision actualizada exitosamente"}, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        super().destroy(request, *args, **kwargs)
+        return Response({"message": "Revision eliminada exitosamente"}, status=status.HTTP_204_NO_CONTENT)
 
 class ProcesarMensajeIAView(generics.CreateAPIView):
     serializer_class = MensajeIAInputSerializer

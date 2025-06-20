@@ -31,3 +31,11 @@ class Cita(models.Model):
     recordatorio = models.CharField(max_length=100, blank=True)
     
     mascota = models.ForeignKey(Mascota, on_delete=models.CASCADE)
+
+
+class Revision(models.Model):
+    titulo = models.CharField(max_length=100)
+    fecha = models.DateField()
+    descripcion = models.CharField(max_length=200, blank=True)
+
+    mascota = models.ForeignKey(Mascota, on_delete=models.CASCADE)
