@@ -136,9 +136,12 @@ class CitaCreateView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         print("Datos recibidos:", request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Cita creada exitosamente"}, status=status.HTTP_201_CREATED)
-        print("Errores del serializer:", serializer.errors)  # <-- imprime los errores
+            cita = serializer.save()
+            # Usamos el serializer completo para la respuesta
+            response_serializer = CitaSerializer(cita)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+        print("Errores del serializer:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
