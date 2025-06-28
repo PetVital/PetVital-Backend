@@ -88,6 +88,52 @@ class HomeDataView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
+class ChangePasswordView(APIView):
+    def post(self, request, user_id):
+        nueva_contraseña = request.data.get('nueva_contraseña')
+        if not nueva_contraseña:
+            return Response({'error': 'Se requiere una nueva contraseña'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(user_id=user_id)
+            user.contraseña = nueva_contraseña
+            user.save()
+            return Response({'message': 'Contraseña actualizada exitosamente'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+from rest_framework import generics, status
+from rest_framework.response import Response
+from .models import User
+from .serializers import UserSerializer
+
+class UserUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'user_id'
+
+    def update(self, request, *args, **kwargs):
+        print(">>> [UPDATE] Datos recibidos:", request.data)
+
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+
+        if serializer.is_valid():
+            serializer.save()
+            print(">>> [UPDATE] Usuario actualizado correctamente")
+            return Response({"message": "Usuario actualizado exitosamente"}, status=status.HTTP_200_OK)
+        else:
+            print(">>> [UPDATE] Errores del serializer:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        print(f">>> [DESTROY] Eliminando usuario ID: {instance.user_id}")
+        self.perform_destroy(instance)
+        return Response({"message": "Usuario eliminado exitosamente"}, status=status.HTTP_204_NO_CONTENT)
+
+
 # Crear Mascota
 class MascotaCreateView(generics.CreateAPIView):
     serializer_class = MascotaCreateSerializer

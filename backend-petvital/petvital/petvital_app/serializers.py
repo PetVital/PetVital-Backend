@@ -10,6 +10,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ['nombres', 'apellidos', 'email', 'contraseña']
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['user_id', 'nombres', 'apellidos', 'email']
+
+
 class MascotaCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mascota
