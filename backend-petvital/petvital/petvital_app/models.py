@@ -11,7 +11,13 @@ class User(models.Model):
     apellidos = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     contraseña = models.CharField(max_length=20)
-    fecha_registro = models.DateTimeField(default=get_lima_now)
+    fecha_registro = models.DateTimeField(default=timezone.now)
+
+    @property
+    def fecha_registro_lima(self):
+        """Retorna la fecha de registro en hora de Lima"""
+        lima_tz = pytz.timezone('America/Lima')
+        return self.fecha_registro.astimezone(lima_tz)
 
     def __str__(self):
         return self.nombres

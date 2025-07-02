@@ -28,6 +28,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1']
 
 
+# En tu settings.py
+TIME_ZONE = 'America/Lima'
+USE_TZ = True
+
 # Application definition
 
 INSTALLED_APPS = [
