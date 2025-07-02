@@ -1,4 +1,9 @@
 from django.db import models
+from django.utils import timezone
+import pytz
+
+def get_lima_now():
+    return timezone.now().astimezone(pytz.timezone('America/Lima'))
 
 class User(models.Model):
     user_id = models.AutoField(primary_key=True)
@@ -6,6 +11,7 @@ class User(models.Model):
     apellidos = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     contraseña = models.CharField(max_length=20)
+    fecha_registro = models.DateTimeField(default=get_lima_now)
 
     def __str__(self):
         return self.nombres

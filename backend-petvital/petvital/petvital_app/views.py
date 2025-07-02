@@ -88,6 +88,12 @@ class HomeDataView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
+class GetAllUsersView(APIView):
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserDataSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class ChangePasswordView(APIView):
     def post(self, request, user_id):
         nueva_contraseña = request.data.get('nueva_contraseña')

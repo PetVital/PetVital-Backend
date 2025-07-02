@@ -15,6 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['user_id', 'nombres', 'apellidos', 'email']
 
+class UserDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['user_id', 'nombres', 'apellidos', 'email', 'fecha_registro']
+
 
 class MascotaCreateSerializer(serializers.ModelSerializer):
     class Meta:

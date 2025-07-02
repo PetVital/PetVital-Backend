@@ -8,6 +8,8 @@ urlpatterns = [
     path('home-data/', HomeDataView.as_view(), name='home_data'),
 
     path('usuarios/<int:user_id>/', UserUpdateDeleteView.as_view(), name='user-update-delete'),
+    path('usuarios/list/', GetAllUsersView.as_view(), name='get-user-list'),
+
     path('usuarios/<int:user_id>/change-password/', ChangePasswordView.as_view(), name='change-password'),
     
     path('mascotas/create/', MascotaCreateView.as_view(), name='mascotas-create'),
